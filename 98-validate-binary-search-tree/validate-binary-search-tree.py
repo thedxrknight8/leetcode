@@ -5,25 +5,23 @@
 #         self.left = left
 #         self.right = right
 class Solution:
-    def isValidBST(self, root: Optional[TreeNode]) -> bool:
-        # at every node, everything below needs to return true
-        # and essentially every parent needs to return true
+    def isValidBST(self, root: TreeNode | None) -> bool:
+        # for a particular root, we maintain a max and a min parameter
+        # essentially, for that root, float('-inf') and float('inf') initially
+        # for the left dfs, then max should be root. if right dfs, then min should be root. 
+        # so for every dfs, we keep checking. if we get to a null value, we have fully dfs'd, and we can return true
+        # otherwise, we must return false (have an or operation with left and right result as return case)
 
-        # so at every stage, we must store the min, the max, the current node
-        # if the node is less than the min
-        # if we are going to the left, max should be the current node 
-        # if we are going to the right, min should be the current node
-        # the other thing (min/max) should just stay the same 
 
-        # if something is not correct like within the range, return False
-
-        def dfs(le, ge, node):
-            if not node:
+        def dfs(root, mi, ma):
+            if not root:
                 return True
+
+            left = right = False
+            if mi < root.val < ma:
+                left = dfs(root.left, mi, root.val)
+                right = dfs(root.right, root.val, ma)
             
-            if le < node.val < ge:
-                return dfs(le, node.val, node.left) and dfs(node.val, ge, node.right)
-            else:
-                return False
-        
-        return dfs(root.val, float('inf'), root.right) and dfs(float('-inf'), root.val, root.left)
+            return left and right
+        return dfs(root, float('-inf'), float('inf'))
+            
